@@ -53,4 +53,9 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+#mac
+.DS_Store
 *~
+
+#pycharm
+.idea/*

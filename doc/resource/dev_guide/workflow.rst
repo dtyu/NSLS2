@@ -1,14 +1,13 @@
 .. _workflow:
 
-########
-Workflow
-########
+Git workflow
+^^^^^^^^^^^^
 
 The basic workflow is that you develop new code on feature branches in
 your local repository.  When you want your code merged into the main
-repository you push your work to ``github`` and create a "Pull Request" (PR).
-The code is then reviewed and once everyone is happy, merge into
-``NLSL-II/master`` .
+repository you push your work to ``github`` and create a "Pull
+Request" (PR).  The code is then reviewed and once everyone is happy,
+it will be merged into ``NLSL-II/master``.
 
 Rules
 -----
