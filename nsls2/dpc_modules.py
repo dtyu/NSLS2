@@ -273,7 +273,7 @@ def _rss(v, xdata, ydata, beta):
 
 
 
-def fit(ref_f, f, _rss_cache, start_point=[1, 0], solver='Nelder-Mead', tol=1e-1, 
+def fit(ref_f, f, _rss_cache, start_point=[1, 0], solver='Nelder-Mead', tol=1e-8, 
         max_iters=2000):
     """ 
     Nonlinear fitting 
