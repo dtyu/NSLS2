@@ -12,16 +12,23 @@ Fourier-shift fitting.
 Reference: Yan, H. et al. Quantitative x-ray phase imaging at the nanoscale by 
            multilayer Laue lenses. Sci. Rep. 3, 1307; DOI:10.1038/srep01307 
            (2013).
+
+The dpc_workflow() function, by default, requires a SOFC folder containing the 
+test data in your home directory. The default path for the  results (texts and 
+JPEGs) is also your home directory.
+
 """
 
 from __future__ import print_function
+
 import os
+import time
 import numpy as np
 import matplotlib.pyplot as plt
 
+from os.path import expanduser
 from scipy.misc import imsave
 from scipy.optimize import minimize
-import time
 
 
 
@@ -60,8 +67,9 @@ def image_reduction(im, roi=None, bad_pixels=None):
         x1, y1, x2, y2 = roi
         im = im[x1 : x2 + 1, y1 : y2 + 1]
         
-    xline = np.sum(im, axis=1)
-    yline = np.sum(im, axis=0)
+    xline = np.sum(im, axis=0)
+    yline = np.sum(im, axis=1)
+    yline = yline[46 : 61]
         
     return xline, yline
 
@@ -89,9 +97,10 @@ def ifft1D(data):
 
 
 
-def load_image(filename):
+def _load_image(filename):
     """ 
-    Load an image and return a 2D numpy array 
+    Load and preprocess an image
+    return a 2D numpy array 
     
     Parameters
     ----------
@@ -161,8 +170,36 @@ def load_image(filename):
         return t
         
     else:
+        print('Please download and decompress the test data to your home directory\
+               Google drive link, https://drive.google.com/file/d/0B3v6W1bQwN_AVjdYdERHUDBsMmM/edit?usp=sharing')
         raise Exception('File not found: %s' % filename)
         
+
+def load_image(filename):
+    """
+    Load an image
+    
+    Parameters
+    ----------
+    filename : string
+        the location and name of an image
+    
+    Return
+    ----------
+    t : 2-D numpy array
+        store the image data
+        
+    """ 
+    
+    if os.path.exists(filename):  
+        t = plt.imread(filename)
+    
+    else:
+        print('Please download and decompress the test data to your home directory\
+               Google drive link, https://drive.google.com/file/d/0B3v6W1bQwN_AVjdYdERHUDBsMmM/edit?usp=sharing')
+        raise Exception('File not found: %s' % filename) 
+    
+    return t
 
 
 def _cache(data, _rss_cache):
@@ -236,7 +273,7 @@ def _rss(v, xdata, ydata, beta):
 
 
 
-def fit(ref_f, f, _rss_cache, start_point=[1, 0], solver='Nelder-Mead', tol=1e-4, 
+def fit(ref_f, f, _rss_cache, start_point=[1, 0], solver='Nelder-Mead', tol=1e-1, 
         max_iters=2000):
     """ 
     Nonlinear fitting 
@@ -281,7 +318,7 @@ def fit(ref_f, f, _rss_cache, start_point=[1, 0], solver='Nelder-Mead', tol=1e-4
 
 
 
-def recon(gx, gy, dx=0.015, dy=0.015, pad=1, w=1.):
+def recon(gx, gy, dx=0.1, dy=0.1, pad=1, w=1.):
     """ 
     Reconstruct the final phase image 
     
@@ -356,15 +393,15 @@ def recon(gx, gy, dx=0.015, dy=0.015, pad=1, w=1.):
 
 
 
-settings = dict(file_format = '/Users/admin/Documents/hanfei_new_data/Chromosome_9/Chromosome_9_%05d.tif',
+settings = dict(file_format = expanduser("~") + '/SOFC/SOFC_%05d.tif',
                 start_point=[1, 0],
-                first_image=0,
-                ref_image=0,
+                first_image=1,
+                ref_image=1,
                 pixel_size=55,
                 focus_to_det=1.46e6,
-                dx=0.015,
-                dy=0.015,
-                rows = 101,
+                dx=0.1,
+                dy=0.1,
+                rows = 121,
                 cols = 121,
                 energy=19.5,
                 roi=None,
@@ -396,7 +433,7 @@ def dpc_workflow():
     """
 
     # Step 1.
-    roi = (108, 122, 403, 402)
+    roi = settings['roi']
     rows = settings['rows']
     cols = settings['cols']
     energy = settings['energy']
@@ -404,7 +441,7 @@ def dpc_workflow():
     first_image = settings['first_image']
     file_format = settings['file_format']
     focus_to_det = settings['focus_to_det']
-    _rss_cache ={}
+    _rss_cache = {}
     
     # Initialize a, gx, gy and phi
     a = np.zeros((rows, cols), dtype='d')
@@ -466,16 +503,14 @@ def dpc_workflow():
     phi = recon(gx, gy)
     
     # Step 7.
-    imsave('phi.jpg', phi)
-    np.savetxt('phi.txt', phi)   
-    imsave('a.jpg', a)
-    np.savetxt('a.txt', a) 
-    imsave('gx.jpg', gx)
-    np.savetxt('gx.txt', gx) 
-    imsave('gy.jpg', gy)
-    np.savetxt('gy.txt', gy)
-    
-    
+    imsave(expanduser("~") + '/phi.jpg', phi)
+    np.savetxt(expanduser("~") + '/phi.txt', phi)
+    imsave(expanduser("~") + '/a.jpg', a)
+    np.savetxt(expanduser("~") + '/a.txt', a)
+    imsave(expanduser("~") + '/gx.jpg', gx)
+    np.savetxt(expanduser("~") + '/gx.txt', gx)
+    imsave(expanduser("~") + '/gy.jpg', gy)
+    np.savetxt(expanduser("~") + '/gy.txt', gy)
     
     
 if __name__ == '__main__':
