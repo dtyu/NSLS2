@@ -14,8 +14,12 @@ Reference: Yan, H. et al. Quantitative x-ray phase imaging at the nanoscale by
            (2013).
 
 The dpc_workflow() function, by default, requires a SOFC folder containing the 
-test data in your home directory. The default path for the  results (texts and 
+test data in your home directory. The default path for the results (texts and 
 JPEGs) is also your home directory.
+
+dpc_workflow() will automatically download the data to your home directory if
+you installed wget and unzip utilities. You can also manually download and
+decompress the data at https://www.dropbox.com/s/963c4ymfmbjg5dm/SOFC.zip
 
 """
 
@@ -26,6 +30,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 
+from subprocess import call
 from os.path import expanduser
 from scipy.misc import imsave
 from scipy.optimize import minimize
@@ -170,8 +175,9 @@ def _load_image(filename):
         return t
         
     else:
-        print('Please download and decompress the test data to your home directory\
-               Google drive link, https://drive.google.com/file/d/0B3v6W1bQwN_AVjdYdERHUDBsMmM/edit?usp=sharing')
+        print('Please download and decompress the test data to your home directory\n\
+               Google Drive link, https://drive.google.com/file/d/0B3v6W1bQwN_AVjdYdERHUDBsMmM/edit?usp=sharing\n\
+               Dropbox link, https://www.dropbox.com/s/963c4ymfmbjg5dm/SOFC.zip')
         raise Exception('File not found: %s' % filename)
         
 
@@ -195,8 +201,9 @@ def load_image(filename):
         t = plt.imread(filename)
     
     else:
-        print('Please download and decompress the test data to your home directory\
-               Google drive link, https://drive.google.com/file/d/0B3v6W1bQwN_AVjdYdERHUDBsMmM/edit?usp=sharing')
+        print('Please download and decompress the test data to your home directory\n\
+               Google drive link, https://drive.google.com/file/d/0B3v6W1bQwN_AVjdYdERHUDBsMmM/edit?usp=sharing\n\
+               Dropbox link, https://www.dropbox.com/s/963c4ymfmbjg5dm/SOFC.zip')
         raise Exception('File not found: %s' % filename) 
     
     return t
@@ -431,7 +438,14 @@ def dpc_workflow():
     7. Save intermediate and final results
     
     """
-
+    
+    if not os.path.exists(expanduser("~") + '/SOFC/'):
+        print('The required test data directory was not found\n\
+               Start to download the test data to the home directoty')
+        call('wget https://www.dropbox.com/s/963c4ymfmbjg5dm/SOFC.zip -P ~/', shell=True)
+        call('unzip ~/SOFC.zip -d ~/ && rm ~/SOFC.zip', shell=True)
+       
+                    
     # Step 1.
     roi = settings['roi']
     rows = settings['rows']
