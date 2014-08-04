@@ -20,7 +20,7 @@ from matplotlib.figure import Figure
 import matplotlib.gridspec as gridspec
 import ImageEnhance
 
-import dpc
+import dpc_gui_kernel as dpc
 
 sys.path.insert(0, '/home/nanopos/ecli/')
 import pyspecfile
