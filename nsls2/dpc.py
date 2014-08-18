@@ -138,7 +138,7 @@ def _cache(data, _rss_cache):
     try:
         beta = _rss_cache[length]
     except:
-        beta = 1j * (np.arange(length) - np.floor(length // 2.0))
+        beta = 1j * (np.arange(length) - np.floor(length / 2.0))
         _rss_cache[length] = beta
             
     return beta
@@ -291,17 +291,17 @@ def recon(gx, gy, dx=0.1, dy=0.1, pad=1, w=1.):
     
     c = np.zeros((pad * rows, pad * cols), dtype=complex)
     
-    mid_col = (np.floor((pad * cols) // 2.0) + 1)
-    mid_row = (np.floor((pad * rows) // 2.0) + 1)
+    mid_col = (np.floor((pad * cols) / 2.0) + 1)
+    mid_row = (np.floor((pad * rows) / 2.0) + 1)
      
     for i in range(pad * rows):
         for j in range(pad * cols):
-            kappax = 2 * np.pi * (j + 1 - mid_col) // (pad * cols * dx)
-            kappay = 2 * np.pi * (i + 1 - mid_row) // (pad * rows * dy)
+            kappax = 2 * np.pi * (j + 1 - mid_col) / (pad * cols * dx)
+            kappay = 2 * np.pi * (i + 1 - mid_row) / (pad * rows * dy)
             if kappax == 0 and kappay == 0:
                 c[i, j] = 0
             else:
-                c[i, j] = -1j * (kappax * tx[i][j] + w * kappay * ty[i][j]) // (kappax ** 2 + w * kappay ** 2)
+                c[i, j] = -1j * (kappax * tx[i][j] + w * kappay * ty[i][j]) / (kappax ** 2 + w * kappay ** 2)
 
     c = np.fft.ifftshift(c)
     phi_padding = np.fft.ifft2(c)
