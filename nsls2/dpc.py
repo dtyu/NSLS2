@@ -294,8 +294,9 @@ def recon(gx, gy, dx=0.1, dy=0.1, pad=1, w=1.):
             if kappax == 0 and kappay == 0:
                 c[i, j] = 0
             else:
-                #todo kappax * kappax
-                c[i, j] = -1j * (kappax * tx[i][j] + w * kappay * ty[i][j]) / (kappax ** 2 + w * kappay ** 2)
+                c[i, j] = -1j * (kappax * tx[i][j] + w * kappay *
+                                 ty[i][j]) / (kappax * kappax +
+                                              w * kappay * kappay)
 
     c = np.fft.ifftshift(c)
     phi_padding = np.fft.ifft2(c)
