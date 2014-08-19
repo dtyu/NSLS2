@@ -66,7 +66,7 @@ def image_reduction(im, roi=None, bad_pixels=None):
         [(1, 5), (2, 6)] --> 2 bad pixels --> (1, 5) and (2, 6)
     
     Returns
-    ----------
+    -------
     xline : 1-D numpu array
         the sum of the image data along x direction
         
@@ -81,13 +81,12 @@ def image_reduction(im, roi=None, bad_pixels=None):
                 
     if roi is not None:
         x1, y1, x2, y2 = roi
-        im = im[x1 : x2 + 1, y1 : y2 + 1]
+        im = im[x1: x2 + 1, y1: y2 + 1]
         
     xline = np.sum(im, axis=0)
     yline = np.sum(im, axis=1)
         
     return xline, yline
-
 
 
 def ifft1D(data):
@@ -111,7 +110,6 @@ def ifft1D(data):
     return f
 
 
-
 def _cache(data, _rss_cache):
     """ 
     Internal function used by fit()
@@ -126,7 +124,7 @@ def _cache(data, _rss_cache):
         dict[int] = int
         
     Returns
-    ----------
+    -------
     beta : complex integer
         beta is only dependent on the data length
     
@@ -141,7 +139,6 @@ def _cache(data, _rss_cache):
         _rss_cache[length] = beta
             
     return beta
-
 
 
 def _rss(v, xdata, ydata, beta):
@@ -180,7 +177,6 @@ def _rss(v, xdata, ydata, beta):
     return residue
 
 
-
 def fit(ref_f, f, start_point=[1, 0], solver='Nelder-Mead', tol=1e-8, 
         max_iters=2000):
     """ 
@@ -207,16 +203,16 @@ def fit(ref_f, f, start_point=[1, 0], solver='Nelder-Mead', tol=1e-8,
     max_iters : integer
         maximum iterations of nonlinear fitting
         
-    Returns:
-    ----------
+    Returns
+    -------
     a : float
         fitting result: intensity attenuation
 
     g : float
         fitting result: phase gradient
     
-    See Also:
-    ---------    
+    See Also
+    --------
     _rss() : function
         objective function to be minimized in the fitting algorithm
     
@@ -225,15 +221,15 @@ def fit(ref_f, f, start_point=[1, 0], solver='Nelder-Mead', tol=1e-8,
     
     """
         
-    res = minimize(_rss, start_point, args=(ref_f, f, _cache(ref_f, _rss_cache)),
-                    method=solver, tol=tol, options=dict(maxiter=max_iters))
+    res = minimize(_rss, start_point,
+                   args=(ref_f, f, _cache(ref_f, _rss_cache)),
+                   method=solver, tol=tol, options=dict(maxiter=max_iters))
                     
     vx = res.x
     a = vx[0]
     g = vx[1]
         
     return a, g
-
 
 
 def recon(gx, gy, dx=0.1, dy=0.1, pad=1, w=1.):
@@ -265,7 +261,7 @@ def recon(gx, gy, dx=0.1, dy=0.1, pad=1, w=1.):
         weighting parameter
         
     Returns
-    ----------
+    -------
     phi : 2-D numpy array
         final phase image
         
@@ -298,17 +294,14 @@ def recon(gx, gy, dx=0.1, dy=0.1, pad=1, w=1.):
             if kappax == 0 and kappay == 0:
                 c[i, j] = 0
             else:
+                #todo kappax * kappax
                 c[i, j] = -1j * (kappax * tx[i][j] + w * kappay * ty[i][j]) / (kappax ** 2 + w * kappay ** 2)
 
     c = np.fft.ifftshift(c)
     phi_padding = np.fft.ifft2(c)
     phi_padding = -phi_padding.real
     
-    phi = phi_padding[(pad // 2) * rows : (pad // 2 + 1) * rows,
-                      (pad // 2) * cols : (pad // 2 + 1) * cols]
+    phi = phi_padding[(pad // 2) * rows: (pad // 2 + 1) * rows,
+                      (pad // 2) * cols: (pad // 2 + 1) * cols]
     
     return phi
-
-
-
-
