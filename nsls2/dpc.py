@@ -44,9 +44,8 @@ from __future__ import (absolute_import, division, print_function,
 import numpy as np
 from scipy.optimize import minimize
 
-import os
-import time
 
+_rss_cache = {}
 
 
 def image_reduction(im, roi=None, bad_pixels=None):
@@ -64,7 +63,7 @@ def image_reduction(im, roi=None, bad_pixels=None):
         
     bad_pixels : list
         store the coordinates of bad pixels
-        [(1, 5), (2, 6)] --> 2 bad pixels --> (1, 5) and (2, 6) 
+        [(1, 5), (2, 6)] --> 2 bad pixels --> (1, 5) and (2, 6)
     
     Returns
     ----------
@@ -225,9 +224,7 @@ def fit(ref_f, f, start_point=[1, 0], solver='Nelder-Mead', tol=1e-8,
         use dictionary to cache some calculation results
     
     """
-    
-    _rss_cache = {}
-    
+        
     res = minimize(_rss, start_point, args=(ref_f, f, _cache(ref_f, _rss_cache)),
                     method=solver, tol=tol, options=dict(maxiter=max_iters))
                     
@@ -311,3 +308,7 @@ def recon(gx, gy, dx=0.1, dy=0.1, pad=1, w=1.):
                       (pad // 2) * cols : (pad // 2 + 1) * cols]
     
     return phi
+
+
+
+
